@@ -1,0 +1,21 @@
+ext {
+    projectConfiguration = [
+            compileSdk   : 29,
+            minSdk       : 21,
+            targetSdk    : 29,
+            versionCode  : 1,
+            versionName  : "1.0"
+    ]
+
+    developmentServer = [
+            devHostUrl     : "\"https://www.development.badasoftware.com\"",
+            devBaseUrl     : "\"https://www.development.badasoftware.com/api/\"",
+            devApiAccessKey: "\"AIzaSyOzB818x55FASHvX4JuGQciR9lv7q\"",
+    ]
+
+    productionServer = [
+            prodHostUrl     : "\"https://www.badasoftware.com\"",
+            prodBaseUrl     : "\"https://www.badasoftware.com/api/\"",
+            prodApiAccessKey: "\"AIzaSyOzB818x55FASHvX4JuGQciR9lv7q\"",
+    ]
+}

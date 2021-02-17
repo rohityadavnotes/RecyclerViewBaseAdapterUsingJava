@@ -1,0 +1,212 @@
+apply plugin: 'com.android.application'
+
+def keystorePropertiesFileName = rootProject.file("keystore/keystore.properties");
+def keystoreProperties = new Properties()
+if (keystorePropertiesFileName.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFileName))
+}
+
+def androidVersions = rootProject.ext.projectConfiguration
+def androidDebug = rootProject.ext.developmentServer
+def androidRelease = rootProject.ext.productionServer
+def androidDependencies = rootProject.ext
+
+android {
+
+    compileSdkVersion androidVersions.compileSdk
+
+    defaultConfig {
+        applicationId "com.recycler.view.base.adapter.using.java"
+        minSdkVersion androidVersions.minSdk
+        targetSdkVersion androidVersions.targetSdk
+        versionCode androidVersions.versionCode
+        versionName androidVersions.versionName
+
+        /**
+         * If your minSdkVersion is set to 21 or higher, multidex is enabled by default
+         * and you do not need the multidex support library.
+         */
+        multiDexEnabled true
+
+        vectorDrawables.useSupportLibrary = true
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        buildConfig = true
+        viewBinding = true
+        dataBinding = false
+    }
+
+    signingConfigs {
+
+        release {
+            /* Specifies the path to your keystore file. */
+            storeFile file(keystoreProperties['releaseKeyStoreFilePath'])
+            /* Specifies the password for your keystore. */
+            storePassword keystoreProperties['releaseStorePassword']
+            /* Specifies the identifying name for your key. */
+            keyAlias keystoreProperties['releaseKeyAlias']
+            /* Specifies the path to your keystore file. */
+            keyPassword keystoreProperties['releaseKeyPassword']
+        }
+    }
+
+    buildTypes {
+        debug {
+
+            buildConfigField("String", "HOST_URL", androidDebug.devHostUrl)
+            buildConfigField("String", "BASE_URL", androidDebug.devBaseUrl)
+            buildConfigField("String", "API_ACCESS_KEY", androidDebug.devApiAccessKey)
+
+            debuggable true
+            zipAlignEnabled false
+            minifyEnabled false
+            signingConfig signingConfigs.debug
+        }
+
+        release {
+
+            buildConfigField("String", "HOST_URL", androidRelease.prodHostUrl)
+            buildConfigField("String", "BASE_URL", androidRelease.prodBaseUrl)
+            buildConfigField("String", "API_ACCESS_KEY", androidRelease.prodApiAccessKey)
+
+            debuggable false
+            shrinkResources true
+            zipAlignEnabled true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    /* dx tool (android converts jar package to dex format binary jar package tool) This will apply all task s that use dex. Resolve configuration of 65535 */
+    dexOptions {
+        incremental true
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
+    }
+
+    /* Sometimes when we package, we display lint errors, so we can add */
+    lintOptions {
+        abortOnError false
+    }
+
+    /* Packing ignores the same files as third-party jars */
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES.txt'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/dependencies.txt'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/LGPL2.1'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/notice.txt'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+
+    implementation "androidx.appcompat:appcompat:$androidDependencies.appcompat"
+    implementation "androidx.constraintlayout:constraintlayout:$androidDependencies.constraintLayout"
+
+    /**
+     * The Support Library is a static library that you can add to your Android application in order
+     * to use APIs that are either not available for older platform versions or utility APIs that
+     * aren't a part of the framework APIs. Compatible on devices running API 14 or later.
+     */
+    implementation 'androidx.legacy:legacy-support-v13:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    testImplementation "junit:junit:$androidDependencies.jUnit"
+    androidTestImplementation "androidx.test.ext:junit:$androidDependencies.testJunit"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidDependencies.espressoCore"
+    /**
+     * However, if your minSdkVersion is set to 20 or lower,
+     * then you must use the multiDex support library
+     */
+    implementation "androidx.multidex:multidex:$androidDependencies.multidex"
+
+    implementation "androidx.vectordrawable:vectordrawable:$androidDependencies.vectorDrawable"
+    /**
+     * To be able to animate properties of a VectorDrawable, add the following.  Useful for
+     * illustration purposes or state changes in response to user events
+     */
+    implementation "androidx.vectordrawable:vectordrawable-animated:$androidDependencies.vectorDrawable"
+
+    /* Design Libraries */
+    implementation "com.google.android.material:material:$androidDependencies.materialDesign"
+    implementation "androidx.cardview:cardview:$androidDependencies.cardView"
+    implementation "androidx.recyclerview:recyclerview:$androidDependencies.recyclerView"
+    implementation "androidx.drawerlayout:drawerlayout:$androidDependencies.navigationDrawer"
+
+    /* Dependency Injection Framework */
+    implementation "com.google.dagger:dagger:$androidDependencies.dagger"
+    annotationProcessor "com.google.dagger:dagger-compiler:$androidDependencies.dagger"
+    implementation "com.google.dagger:dagger-android:$androidDependencies.dagger"
+    implementation "com.google.dagger:dagger-android-support:$androidDependencies.dagger"
+    annotationProcessor "com.google.dagger:dagger-android-processor:$androidDependencies.dagger"  /* if you use the support libraries */
+
+    /* RxJava & RxAndroid */
+    implementation "io.reactivex.rxjava2:rxjava:$androidDependencies.rxJava"
+    implementation "io.reactivex.rxjava2:rxandroid:$androidDependencies.rxAndroid"
+
+    /* Retrofit & OkHttp Libraries */
+    implementation "com.squareup.okhttp3:okhttp:$androidDependencies.okHttp"
+    implementation "com.squareup.okhttp3:logging-interceptor:$androidDependencies.loggingInterceptor"
+    implementation "com.squareup.retrofit2:retrofit:$androidDependencies.retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$androidDependencies.retrofitGsonConverter"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$androidDependencies.rxJavaAdapter" /* optional - RxJava support for Retrofit */
+
+    /* Picasso Libraries */
+    implementation "com.squareup.picasso:picasso:$androidDependencies.picasso"
+
+    /* Glide Libraries */
+    implementation "com.github.bumptech.glide:glide:$androidDependencies.glide"
+    annotationProcessor "com.github.bumptech.glide:compiler:$androidDependencies.glide"
+
+    /* Google Libraries */
+    implementation "com.google.code.gson:gson:$androidDependencies.googleGson"
+    implementation "com.googlecode.libphonenumber:libphonenumber:$androidDependencies.libphonenumber"
+    implementation "androidx.browser:browser:$androidDependencies.chromeCustomTabs"
+
+    /* Room Libraries */
+    implementation "androidx.room:room-runtime:$androidDependencies.roomVersion"
+    annotationProcessor "androidx.room:room-compiler:$androidDependencies.roomVersion"
+    implementation "androidx.room:room-rxjava2:$androidDependencies.roomVersion" /* optional - RxJava support for Room */
+
+    /* ViewModel Libraries */
+    implementation "androidx.lifecycle:lifecycle-viewmodel:$androidDependencies.lifecycleVersion"
+
+    /* LiveData Libraries */
+    implementation "androidx.lifecycle:lifecycle-livedata:$androidDependencies.lifecycleVersion"
+
+    /* Lifecycle only (without ViewModel or LiveData) */
+    implementation "androidx.lifecycle:lifecycle-runtime:$androidDependencies.lifecycleVersion"
+
+    /* Other Third Party Libraries */
+    implementation "com.intuit.sdp:sdp-android:$androidDependencies.sdp"
+    implementation "com.github.joielechong:countrycodepicker:$androidDependencies.countrycodepicker"
+
+    /**
+     * Logging Interceptor
+     * link : https://github.com/ihsanbal/LoggingInterceptor
+     */
+    implementation('com.github.ihsanbal:LoggingInterceptor:3.1.0') {
+        exclude group: 'org.json', module: 'json'
+    }
+}
