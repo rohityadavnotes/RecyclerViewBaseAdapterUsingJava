@@ -7,9 +7,9 @@ Let RecyclerViewBaseAdapterUsingJava support
 - Example : SingleType RecyclerView
 - Example : MultiType RecyclerView
 
-| Single Type      | Multi Type      |
-|------------------|-----------------|
-| <img src="https://github.com/rohitnotes/RecyclerView/blob/master/screen/1.png" width="250"> | <img src="https://github.com/rohitnotes/RecyclerView/blob/master/screen/2.png" width="250"> |
+| Single Type      | Multi Type  1   | Multi Type   2  |
+|------------------|-----------------|-----------------|
+| <img src="https://github.com/rohityadavnotes/RecyclerViewBaseAdapterUsingJava/blob/master/art/single.png" width="250"> | <img src="https://github.com/rohityadavnotes/RecyclerViewBaseAdapterUsingJava/blob/master/art/multiple-1.png" width="250"> | <img src="https://github.com/rohityadavnotes/RecyclerViewBaseAdapterUsingJava/blob/master/art/multiple-2.png" width="250"> |
 
 ## Author ##
 
